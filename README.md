@@ -44,7 +44,7 @@ services:
       - /etc/localtime:/etc/localtime:ro
     environment:
       - DOMAIN=yourdomain.com
-      - SUBDOMAIN=subdomain
+      - SUBDOMAIN=subdomain,subdomain2
       # - PROVIDER=ipify
       # - TTL=600
 ```
@@ -58,7 +58,7 @@ docker run -d \
   -v ./my-ovh.conf:/etc/ovh.conf:ro \
   -v /etc/localtime:/etc/localtime:ro \
   -e DOMAIN=yourdomain.com \
-  -e SUBDOMAIN=subdomain \
+  -e SUBDOMAIN=subdomain,subdomain2 \
   ghcr.io/myanesp/ovh-ip-updater
 ```
 
@@ -66,8 +66,8 @@ docker run -d \
 
 | VARIABLE | MANDATORY | VALUE | DEFAULT |
 |----------|:---------:|-------------------------------------------------------------|---------|
-| DOMAIN | ✅ | Your domain (like example.com) | `empty` |
-| SUBDOMAIN| ✅ | Subdomain to update the IP (like www) | `empty` |
+| DOMAIN | ✅ | Your domain (like `example.com`) | `empty` |
+| SUBDOMAIN| ✅ | Subdomain to update the IP (like `www`, if more `sub,sub2`...) | `empty` |
 | TTL | ❌ | The time-to-live in seconds of the record | `600` |
 | PROVIDER | ❌ | Service for checking the public IP address (can be `ipify`, `mullvad` or `ifconfig`) | `ipify` |
 
