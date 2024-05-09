@@ -37,3 +37,16 @@ def obtain_ip(ip_provider):
 def tims():
     ts = datetime.now().strftime("[%d-%m %H:%M:%S]")
     return(ts)
+
+def count_sub(env):
+
+    if env:
+        subdomains = env.split(',')
+
+        subquan = len(subdomains)
+
+        return(subquan)
+
+    else:
+        print(f"{tims()} Subdomain environment variable is not set, exiting")
+        sys.exit()

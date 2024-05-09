@@ -25,29 +25,62 @@ client = ovh.Client()
 
 time.sleep(2)
 
-# Get the ID of the subdomain, needed for update its IP
-record_id = client.get(f'/domain/zone/{zone_name}/record', 
-    fieldType='A', 
-    subDomain=sub,
-)
+n_sub = count_sub(sub)
 
-## If it is correct, check if the record is empty to know if it exists previously or not
-if record_id:
+if n_sub == 1:
 
-    rec_id = record_id[0]
-
-    result = client.put(f'/domain/zone/{zone_name}/record/{rec_id}', 
-        subDomain=sub, 
-        target=ip, 
-        ttl=ttl, 
+    # Get the ID of the subdomain, needed for update its IP
+    record_id = client.get(f'/domain/zone/{zone_name}/record', 
+        fieldType='A', 
+        subDomain=sub,
     )
 
-    time.sleep(2)
+    ## If it is correct, check if the record is empty to know if it exists previously or not
+    if record_id:
+
+        rec_id = record_id[0]
+
+        result = client.put(f'/domain/zone/{zone_name}/record/{rec_id}', 
+            subDomain=sub, 
+            target=ip, 
+            ttl=ttl, 
+        )
+
+        time.sleep(2)
+
+        refresh = client.post(f'/domain/zone/{zone_name}/refresh')
+        print(f"{tims()} IP updated for {sub}.{zone_name} with IP {ip}.")
+
+    elif not record_id:
+        print(f'{tims()} The subdomain you have provided does not exist. Please, create it first on your OVH web console and try again.')
+        sys.exit()
+
+elif n_sub > 1:
+    sub_list = sub.split(',')
+
+    for sub in sub_list:
+        record_id = client.get(f'/domain/zone/{zone_name}/record', 
+        fieldType='A', 
+        subDomain=sub,
+        )
+
+    ## If it is correct, check if the record is empty to know if it exists previously or not
+        if record_id:
+
+            rec_id = record_id[0]
+
+            result = client.put(f'/domain/zone/{zone_name}/record/{rec_id}', 
+                subDomain=sub, 
+                target=ip, 
+                ttl=ttl, 
+            )
+
+            time.sleep(2)
+            print(f"{tims()} IP updated for {sub}.{zone_name} with IP {ip}.")
+
+        elif not record_id:
+            print(f'{tims()} The subdomain you have provided does not exist. Please, create it first on your OVH web console and try again.')
+            sys.exit()
 
     refresh = client.post(f'/domain/zone/{zone_name}/refresh')
-    print(f"{tims()} IP updated for {sub}.{zone_name} with IP {ip}.")
-
-elif not record_id:
-    print(f'{tims()} The subdomain you have provided does not exist. Please, create it first on your OVH web console and try again.')
-    sys.exit()
-
+    print(f"{tims()} All subdomains for {zone_name} has been updated.")
