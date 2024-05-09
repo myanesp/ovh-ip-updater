@@ -5,6 +5,7 @@ import json
 import os
 import sys
 from config import *
+from datetime import datetime 
 
 zone_name = os.environ.get("DOMAIN")
 sub = os.environ.get("SUBDOMAIN")
@@ -15,10 +16,10 @@ ip_provider = os.environ.get("PROVIDER")
 ip = obtain_ip(ip_provider)
 
 if not ip:
-    print("Cannot obtain your public IP address. Please, check if there is something wrong with your firewall or connection and try again")
+    print(f"{tims()} Cannot obtain your public IP address. Please, check if there is something wrong with your firewall or connection and try again")
     sys.exit()
 else:
-    print(f"IP obtained succesfully. Your current public IP is {ip}, using {ip_provider}")
+    print(f"{tims()} IP obtained succesfully. Your current public IP is {ip}, using {ip_provider}")
 
 client = ovh.Client() 
 
@@ -44,9 +45,9 @@ if record_id:
     time.sleep(2)
 
     refresh = client.post(f'/domain/zone/{zone_name}/refresh')
-    print(f"IP updated for {sub}.{zone_name} with IP {ip}.")
+    print(f"{tims()} IP updated for {sub}.{zone_name} with IP {ip}.")
 
 elif not record_id:
-    print(f'The subdomain you have provided does not exist. Please, create it first on your OVH web console and try again.')
+    print(f'{tims()} The subdomain you have provided does not exist. Please, create it first on your OVH web console and try again.')
     sys.exit()
 

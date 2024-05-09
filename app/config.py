@@ -1,6 +1,7 @@
 import os
 import requests
 import sys
+from datetime import datetime
 
 def obtain_ip(ip_provider):
     
@@ -32,3 +33,7 @@ def obtain_ip(ip_provider):
     if not ip:
         print("Cannot obtain your public IP address. Please, check if there is something wrong with your firewall or connection and try again")
         sys.exit()
+
+def tims():
+    ts = datetime.now().strftime("[%d-%m %H:%M:%S]")
+    return(ts)
