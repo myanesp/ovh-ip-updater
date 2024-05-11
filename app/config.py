@@ -15,13 +15,13 @@ def obtain_ip(ip_provider):
             pass
     elif ip_provider == 'mullvad':
         try:
-            ip = requests.get('https://am.i.mullvad.net/ip').text
+            ip = requests.get('https://am.i.mullvad.net/ip').text.strip()
             return(ip)
         except:
             pass
     elif ip_provider == 'ifconfig':
         try:
-            ip = requests.get('https://ifconfig.io/ip').text
+            ip = requests.get('https://ifconfig.io/ip').text.strip()
             return(ip)
         except:
             pass

@@ -7,7 +7,7 @@ import sys
 from config import *
 from datetime import datetime 
 
-version = "0.2"
+version = "0.2.1"
 zone_name = os.environ.get("DOMAIN")
 sub = os.environ.get("SUBDOMAIN")
 ttl = os.environ.get("TTL")
