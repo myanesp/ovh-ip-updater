@@ -4,11 +4,18 @@
 [![](https://badgen.net/badge/icon/docker?icon=docker&label)]()
 [![Docker Pulls](https://badgen.net/docker/pulls/myanesp/ovh-ip-updater?icon=docker&label=pulls)](https://hub.docker.com/r/myanesp/ovh-ip-updater/)
 ![](https://badgen.net/github/stars/myanesp/ovh-ip-updater?icon=github&label=stars)
+[![Docker Image Size](https://badgen.net/docker/size/myanesp/ovh-ip-updater?icon=docker&label=image%20size)](https://hub.docker.com/r/myanesp/ovh-ip-updater/)
 ![Github last-commit](https://img.shields.io/github/last-commit/myanesp/ovh-ip-updater)
 ![Github license](https://badgen.net/github/license/myanesp/ovh-ip-updater)
-[![CodeFactor](https://www.codefactor.io/repository/github/myanesp/ovh-ip-updater/badge)](https://www.codefactor.io/repository/github/myanesp/ovh-ip-updater)
-[![](https://img.shields.io/github/languages/code-size/myanesp/ovh-ip-updater.svg)](https://github.com/myanesp/ovh-ip-updater) [![](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental) 
 [![Project Status: Active - The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
+
+## Why?
+
+The traditional way of updating the IP of the subdomains of your OVH domains if you have a dynamic IP is through DynHost, the Duck-DNS-kind-of DDNS system of OVH, and the Internet is full of scripts and programs to update with that system. 
+
+However, I was looking for a system that uses the official API, as that is my favourite method and the one I've been using with other providers. So I tinkered a little and this image, however, uses the OVH API so you don't need to setup a DynHost domain and associate it to your A/AAAA records. With this Docker container, you just need your keys and token and the subdomains you want to update. 
+
+With the release (I hope it will be soon!) of the v1.0 version, you will also forget to access the web portal of OVH to create the subdomains you want to update with this image, as the container will create it if the subdomain does not exist previously.
 
 ## How to run
 
@@ -34,7 +41,7 @@ Put it within the same folder as the `docker-compose.yml` file and map it into t
 
 ### Run with docker compose
 
-This image is available both on [Docker Hub](https://hub.docker.com/r/myanesp/ovh-ip-updater) and GitHub Container Registry, so you're free to choose from which one you're going to download the image. Edit the following docker compose/docker run command to match your needs (domain, subdomains, image registry, the IP fetching provider and the conf file) and you are ready to go!
+This image is available both on [Docker Hub](https://hub.docker.com/r/myanesp/ovh-ip-updater) and [GitHub Container Registry](https://github.com/myanesp/ovh-ip-updater), so you're free to choose from which one you're going to download the image. Edit the following docker compose/docker run command to match your needs (domain, subdomains, image registry, the IP fetching provider and the conf file) and you are ready to go!
 
 ```
 services:
@@ -88,3 +95,4 @@ docker run -d \
 - [ ] Support for IPv6
 - [ ] Rethink the way of forcing updates if IP hasn't changed
 - [ ] Multilingual support
+- [ ] Remove cron jobs and migrate to s6-overlay
