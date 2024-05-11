@@ -15,7 +15,8 @@ ENV PROVIDER ipify
 
 RUN pip3 install --upgrade pip && pip3 install --no-cache-dir ovh requests
 
-RUN echo "*/5 * * * * python3 /app/ovh-updater.py" >> /etc/crontabs/root
+RUN echo "@reboot sleep 10 && python3 /app/ovh-updater.py" >> /etc/crontabs/root && \ 
+    echo "*/5 * * * * python3 /app/ovh-updater.py" >> /etc/crontabs/root
 
 COPY app/ /app
 
