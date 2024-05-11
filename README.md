@@ -2,6 +2,7 @@
 
 [![](https://badgen.net/badge/icon/github?icon=github&label)](https://github.com/myanesp/ovh-ip-updater)
 [![](https://badgen.net/badge/icon/docker?icon=docker&label)]()
+[![Docker Pulls](https://badgen.net/docker/pulls/myanesp/ovh-ip-updater?icon=docker&label=pulls)](https://hub.docker.com/r/myanesp/ovh-ip-updater/)
 ![](https://badgen.net/github/stars/myanesp/ovh-ip-updater?icon=github&label=stars)
 ![Github last-commit](https://img.shields.io/github/last-commit/myanesp/ovh-ip-updater)
 ![Github license](https://badgen.net/github/license/myanesp/ovh-ip-updater)
@@ -33,10 +34,13 @@ Put it within the same folder as the `docker-compose.yml` file and map it into t
 
 ### Run with docker compose
 
+This image is available both on [Docker Hub](https://hub.docker.com/r/myanesp/ovh-ip-updater) and GitHub Container Registry, so you're free to choose from which one you're going to download the image. Edit the following docker compose/docker run command to match your needs (domain, subdomains, image registry, the IP fetching provider and the conf file) and you are ready to go!
+
 ```
 services:
   ovh-ip-updater:
     image: ghcr.io/myanesp/ovh-ip-updater
+    # image: myanesp/ovh-ip-updater # if you prefer to download from DockerHub
     restart: always
     container_name: ovh-ip-updater
     volumes:
@@ -59,7 +63,7 @@ docker run -d \
   -v /etc/localtime:/etc/localtime:ro \
   -e DOMAIN=yourdomain.com \
   -e SUBDOMAIN=subdomain,subdomain2 \
-  ghcr.io/myanesp/ovh-ip-updater
+  ghcr.io/myanesp/ovh-ip-updater # or myanesp/ovh-ip-updater
 ```
 
 ## Environmental variables
@@ -67,7 +71,7 @@ docker run -d \
 | VARIABLE | MANDATORY | VALUE | DEFAULT |
 |----------|:---------:|-------------------------------------------------------------|---------|
 | DOMAIN | ✅ | Your domain (like `example.com`) | `empty` |
-| SUBDOMAIN| ✅ | Subdomain to update the IP (like `www`, if more `sub,sub2`...) | `empty` |
+| SUBDOMAIN| ✅ | Subdomain to update the IP (like `www`, if you want to update more: `sub,sub2`...) | `empty` |
 | TTL | ❌ | The time-to-live in seconds of the record | `600` |
 | PROVIDER | ❌ | Service for checking the public IP address (can be `ipify`, `mullvad` or `ifconfig`) | `ipify` |
 
@@ -79,7 +83,7 @@ docker run -d \
 - [ ] Fallback for obtaining public IP address
 - [ ] Create the record for the subdomain if it does not exist
 - [ ] Multiarch support
-- [ ] Publish on DockerHub
+- [x] Publish on DockerHub
 - [ ] Improve the log outputs and generate an ovh.log
 - [ ] Support for IPv6
 - [ ] Rethink the way of forcing updates if IP hasn't changed
