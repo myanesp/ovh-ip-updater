@@ -63,7 +63,10 @@ if n_sub == 1:
 
             refresh = client.post(f'/domain/zone/{zone_name}/refresh')
             print(f"{tims()} IP updated for {sub}.{zone_name} with IP {ip}.")
-            send_message(ip = ip, domain = zone_name, chat = tg_chat, token = tg_token)
+            if tg_token == None:
+                pass
+            else:
+                send_message(ip = ip, domain = zone_name, chat = tg_chat, token = tg_token)
 
     elif not record_id:
         print(f'{tims()} The subdomain you have provided does not exist. Please, create it first on your OVH web console and try again.')
@@ -105,5 +108,8 @@ elif n_sub > 1:
             sys.exit()
 
     refresh = client.post(f'/domain/zone/{zone_name}/refresh')
-    send_message(ip = ip, domain = zone_name, chat = tg_chat, token = tg_token)
+    if tg_token == None:
+        pass
+    else:
+        send_message(ip = ip, domain = zone_name, chat = tg_chat, token = tg_token)
     print(f"{tims()} All subdomains for {zone_name} has been updated.")
