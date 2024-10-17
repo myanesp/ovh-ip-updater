@@ -7,7 +7,7 @@ import sys
 from config import *
 from datetime import datetime
 
-version = "0.3.1"
+version = "0.3.2"
 zone_name = os.environ.get("DOMAIN")
 sub = os.environ.get("SUBDOMAIN")
 ttl = os.environ.get("TTL")
@@ -90,7 +90,7 @@ elif n_sub > 1:
 
             if target == ip:
                 print(f"{tims()} Your IP hasn't changed since last time. Skipping this time...")
-            
+                continue
             else:
                 result = client.put(f'/domain/zone/{zone_name}/record/{rec_id}', 
                     subDomain=sub, 
@@ -105,9 +105,10 @@ elif n_sub > 1:
             print(f'{tims()} The subdomain you have provided does not exist. Please, create it first on your OVH web console and try again.')
             sys.exit()
 
-    refresh = client.post(f'/domain/zone/{zone_name}/refresh')
-    if tg_token == None:
-        pass
-    else:
-        send_message(ip = ip, domain = zone_name, chat = tg_chat, token = tg_token)
-    print(f"{tims()} All subdomains for {zone_name} has been updated.")
+        refresh = client.post(f'/domain/zone/{zone_name}/refresh')
+        if tg_token == None:
+            pass
+        else:
+            send_message(ip = ip, domain = zone_name, chat = tg_chat, token = tg_token)
+            print(f"{tims()} All subdomains for {zone_name} has been updated.")
+
