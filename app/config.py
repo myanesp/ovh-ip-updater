@@ -53,6 +53,6 @@ def count_sub(env):
 
 def send_message(ip, domain, chat, token):
 
-    message = f"{tims()} - OVH IP UPDATER\n\nChange in your IP, now is {ip}.\nThe subdomains of {domain} have been updated with this new IP."
+    message = f"{tims()} - OVH IP UPDATER\n\nYour IP has changed, now is {ip}.\nThe subdomains of {domain} have been updated with this new IP."
     url = f"https://api.telegram.org/bot{token}/sendMessage?chat_id={chat}&text={message}"
     requests.get(url)
