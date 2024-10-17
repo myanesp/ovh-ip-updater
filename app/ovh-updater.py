@@ -49,7 +49,6 @@ if n_sub == 1:
 
         if target == ip:
             print(f"{tims()} Your IP hasn't changed since last time. Skipping this time...")
-            sys.exit()
 
         else:
 
@@ -91,7 +90,6 @@ elif n_sub > 1:
 
             if target == ip:
                 print(f"{tims()} Your IP hasn't changed since last time. Skipping this time...")
-                sys.exit()
             
             else:
                 result = client.put(f'/domain/zone/{zone_name}/record/{rec_id}', 
