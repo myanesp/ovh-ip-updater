@@ -13,6 +13,8 @@ sub = os.environ.get("SUBDOMAIN")
 ttl = os.environ.get("TTL")
 sec = os.environ.get("INTERVAL")
 ip_provider = os.environ.get("PROVIDER")
+tg_token = os.environ.get("TELEGRAM_TOKEN")
+tg_chat = os.environ.get("TELEGRAM_CHAT_ID")
 
 ip = obtain_ip(ip_provider)
 
@@ -41,16 +43,27 @@ if n_sub == 1:
 
         rec_id = record_id[0]
 
-        result = client.put(f'/domain/zone/{zone_name}/record/{rec_id}', 
-            subDomain=sub, 
-            target=ip, 
-            ttl=ttl, 
-        )
+        # Check for current IP
+        current_ip = client.get(f'/domain/zone/{zone_name}/record/{rec_id}')
+        target = current_ip['target']
 
-        time.sleep(2)
+        if target == ip:
+            print(f"{tims()} Your IP hasn't changed since last time. Skipping this time...")
+            sys.exit()
 
-        refresh = client.post(f'/domain/zone/{zone_name}/refresh')
-        print(f"{tims()} IP updated for {sub}.{zone_name} with IP {ip}.")
+        else:
+
+            result = client.put(f'/domain/zone/{zone_name}/record/{rec_id}', 
+                subDomain=sub, 
+                target=ip, 
+                ttl=ttl, 
+            )
+
+            time.sleep(2)
+
+            refresh = client.post(f'/domain/zone/{zone_name}/refresh')
+            print(f"{tims()} IP updated for {sub}.{zone_name} with IP {ip}.")
+            send_message(ip = ip, domain = zone_name, chat = tg_chat, token = tg_token)
 
     elif not record_id:
         print(f'{tims()} The subdomain you have provided does not exist. Please, create it first on your OVH web console and try again.')
@@ -69,19 +82,28 @@ elif n_sub > 1:
         if record_id:
 
             rec_id = record_id[0]
+            # Check for current IP
+            current_ip = client.get(f'/domain/zone/{zone_name}/record/{rec_id}')
+            target = current_ip['target']
 
-            result = client.put(f'/domain/zone/{zone_name}/record/{rec_id}', 
-                subDomain=sub, 
-                target=ip, 
-                ttl=ttl, 
-            )
+            if target == ip:
+                print(f"{tims()} Your IP hasn't changed since last time. Skipping this time...")
+                sys.exit()
+            
+            else:
+                result = client.put(f'/domain/zone/{zone_name}/record/{rec_id}', 
+                    subDomain=sub, 
+                    target=ip, 
+                    ttl=ttl, 
+                )
 
-            time.sleep(2)
-            print(f"{tims()} IP updated for {sub}.{zone_name} with IP {ip}.")
+                time.sleep(2)
+                print(f"{tims()} IP updated for {sub}.{zone_name} with IP {ip}.")
 
         elif not record_id:
             print(f'{tims()} The subdomain you have provided does not exist. Please, create it first on your OVH web console and try again.')
             sys.exit()
 
     refresh = client.post(f'/domain/zone/{zone_name}/refresh')
+    send_message(ip = ip, domain = zone_name, chat = tg_chat, token = tg_token)
     print(f"{tims()} All subdomains for {zone_name} has been updated.")
