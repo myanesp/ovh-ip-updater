@@ -3,7 +3,7 @@ import requests
 import sys
 from datetime import datetime
 
-def obtain_ip(ip_provider):
+def obtain_ipv4(ip_provider):
     
     ip = str()
     
@@ -31,7 +31,21 @@ def obtain_ip(ip_provider):
         sys.exit()
 
     if not ip:
-        print("Cannot obtain your public IP address. Please, check if there is something wrong with your firewall or connection and try again")
+        print("Cannot obtain your public IPv4 address. Please, check if there is something wrong with your firewall or connection and try again")
+        sys.exit()
+
+def obtain_ipv6():
+    
+    ip = str()
+    
+    try:
+        ip = requests.get('https://api6.ipify.org').text
+        return(ip)
+    except:
+        pass
+
+    if not ip:
+        print("Cannot obtain your public IPv6 address. Please, check if there is something wrong with your firewall or connection and try again")
         sys.exit()
 
 def tims():
