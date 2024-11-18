@@ -86,13 +86,14 @@ docker run -d \
 ## Planned features for v1.0, stable version
 
 - [x] Option to update more than a subdomain at a time
-- [ ] Option to select interval between IP updates (now is only every 5 minutes), and update the IP at container boot
+- [ ] Option to select interval between IP updates (now is only every 5 minutes) 
+- [x] Update the IP at container boot instead of wait 5 minutes
 - [ ] Fallback for obtaining public IP address
-- [ ] Create the record for the subdomain if it does not exist
+- [x] Create the record for the subdomain if it does not exist
 - [ ] Multiarch support
 - [x] Publish on DockerHub
 - [ ] Improve the log outputs and generate an ovh.log
 - [ ] Support for IPv6
-- [ ] Rethink the way of forcing updates if IP hasn't changed
+- [x] Rethink the way of forcing updates if IP hasn't changed
 - [ ] Multilingual support
-- [ ] Remove cron jobs and migrate to s6-overlay
+- [ ] Migrate to s6-overlay
