@@ -12,6 +12,7 @@ ENV DOMAIN=
 ENV SUBDOMAIN=
 ENV TTL=600
 ENV PROVIDER=ipify
+ENV IPV6_SUPPORT=false
 
 RUN pip3 install --upgrade pip && pip3 install --no-cache-dir ovh requests
 
