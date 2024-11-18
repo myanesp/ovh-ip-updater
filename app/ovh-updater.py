@@ -15,14 +15,25 @@ sec = os.environ.get("INTERVAL")
 ip_provider = os.environ.get("PROVIDER")
 tg_token = os.environ.get("TELEGRAM_TOKEN")
 tg_chat = os.environ.get("TELEGRAM_CHAT_ID")
+ipv6_supp = os.environ.get("IPV6_SUPPORT")
 
-ip = obtain_ip(ip_provider)
+ipv4 = obtain_ipv4(ip_provider)
 
-if not ip:
+if ipv6_supp == True:
+    ipv6 = obtain_ipv6()
+
+    if not ipv6:
+        print(f"{tims()} Cannot obtain your public IPv6 address. Please, check if there is something wrong with your firewall or connection and try again")
+        sys.exit()
+    else:
+        print(f"{tims()} IPv6 obtained succesfully. Your current public IPv6 is {ipv6}, using ipify")
+
+if not ipv4:
     print(f"{tims()} Cannot obtain your public IP address. Please, check if there is something wrong with your firewall or connection and try again")
     sys.exit()
 else:
-    print(f"{tims()} IP obtained succesfully. Your current public IP is {ip}, using {ip_provider}")
+    print(f"{tims()} IPv4 obtained succesfully. Your current public IPv4 is {ipv4}, using {ip_provider}")
+
 
 client = ovh.Client() 
 
@@ -32,109 +43,204 @@ n_sub = count_sub(sub)
 
 if n_sub == 1:
 
-    # Get the ID of the subdomain, needed for update its IP
-    record_id = client.get(f'/domain/zone/{zone_name}/record', 
-        fieldType='A', 
-        subDomain=sub,
-    )
-
-    ## If it is correct, check if the record is empty to know if it exists previously or not
-    if record_id:
-
-        rec_id = record_id[0]
-
-        # Check for current IP
-        current_ip = client.get(f'/domain/zone/{zone_name}/record/{rec_id}')
-        target = current_ip['target']
-
-        if target == ip:
-            print(f"{tims()} Your IP hasn't changed since last time. Skipping this time...")
-
-        else:
-
-            result = client.put(f'/domain/zone/{zone_name}/record/{rec_id}', 
-                subDomain=sub, 
-                target=ip, 
-                ttl=ttl, 
-            )
-
-            time.sleep(2)
-
-            refresh = client.post(f'/domain/zone/{zone_name}/refresh')
-            print(f"{tims()} IP updated for {sub}.{zone_name} with IP {ip}.")
-            if tg_token == None:
-                pass
-            else:
-                send_message(ip = ip, domain = zone_name, chat = tg_chat, token = tg_token)
-
-    elif not record_id:
-        print(f'{tims()} The subdomain you have provided does not exist. Trying to create it...')
-
-        create = client.post(f"/domain/zone/{zone_name}/record",
-            target = ip,
-            ttl = 60, 
-            fieldType = "A", 
-            subDomain = sub, 
+    if ipv6:
+        # Get the ID of the subdomain, needed for update its IP
+        record_id = client.get(f'/domain/zone/{zone_name}/record', 
+            fieldType='AAAA', 
+            subDomain=sub,
         )
 
-        refresh = client.post(f'/domain/zone/{zone_name}/refresh')
-        print(f"{tims()} {sub}.{zone_name} created and assigned IP {ip}.")
-        if tg_token == None:
-            pass
-        else:
-            send_create(ip = ip, sub = sub, domain = zone_name, chat = tg_chat, token = tg_token)
+        if record_id:
 
-elif n_sub > 1:
-    sub_list = sub.split(',')
+            rec_id = record_id[0]
 
-    for sub in sub_list:
+            # Check for current IP
+            current_ip = client.get(f'/domain/zone/{zone_name}/record/{rec_id}')
+            target = current_ip['target']
+            if target == ipv6:
+                print(f"{tims()} Your IP hasn't changed since last time. Skipping this time...")
+
+            else:
+                result = client.put(f'/domain/zone/{zone_name}/record/{rec_id}', 
+                    subDomain=sub, 
+                    target=ipv6, 
+                    ttl=ttl, 
+                )
+
+                time.sleep(2)
+
+                refresh = client.post(f'/domain/zone/{zone_name}/refresh')
+                print(f"{tims()} IP updated for {sub}.{zone_name} with IP {ipv6}.")
+                if tg_token == None:
+                    pass
+                else:
+                    send_message(ip = ipv6, domain = zone_name, chat = tg_chat, token = tg_token)
+
+    else:
         record_id = client.get(f'/domain/zone/{zone_name}/record', 
-        fieldType='A', 
-        subDomain=sub,
+            fieldType='A', 
+            subDomain=sub,
         )
 
     ## If it is correct, check if the record is empty to know if it exists previously or not
         if record_id:
 
             rec_id = record_id[0]
+
             # Check for current IP
             current_ip = client.get(f'/domain/zone/{zone_name}/record/{rec_id}')
             target = current_ip['target']
 
-            if target == ip:
+            if target == ipv4:
                 print(f"{tims()} Your IP hasn't changed since last time. Skipping this time...")
-                continue
+
             else:
+
                 result = client.put(f'/domain/zone/{zone_name}/record/{rec_id}', 
                     subDomain=sub, 
-                    target=ip, 
+                    target=ipv4, 
                     ttl=ttl, 
                 )
 
                 time.sleep(2)
-                print(f"{tims()} IP updated for {sub}.{zone_name} with IP {ip}.")
 
-        elif not record_id:
-            print(f'{tims()} The subdomain you have provided does not exist. Trying to create it...')
+                refresh = client.post(f'/domain/zone/{zone_name}/refresh')
+                print(f"{tims()} IP updated for {sub}.{zone_name} with IP {ipv4}.")
+                if tg_token == None:
+                    pass
+                else:
+                    send_message(ip = ipv4, domain = zone_name, chat = tg_chat, token = tg_token)
 
+
+    elif not record_id:
+        print(f'{tims()} The subdomain you have provided does not exist. Trying to create it...')
+
+        if ipv6:
             create = client.post(f"/domain/zone/{zone_name}/record",
-                target = ip,
+                target = ipv6,
                 ttl = 60, 
-                fieldType = "A", 
+                fieldType = "AAAA", 
                 subDomain = sub, 
             )
 
             refresh = client.post(f'/domain/zone/{zone_name}/refresh')
-            print(f"{tims()} {sub}.{zone_name} created and assigned IP {ip}.")
+            print(f"{tims()} {sub}.{zone_name} created and assigned IP {ipv6}.")
+                if tg_token == None:
+                    pass
+                else:
+                    send_create(ip = ipv6, sub = sub, domain = zone_name, chat = tg_chat, token = tg_token)
+        else:
+            create = client.post(f"/domain/zone/{zone_name}/record",
+                target = ipv4,
+                ttl = 60, 
+                fieldType = "A", 
+                subDomain = sub, 
+            )
+            refresh = client.post(f'/domain/zone/{zone_name}/refresh')
+            print(f"{tims()} {sub}.{zone_name} created and assigned IP {ipv4}.")
             if tg_token == None:
                 pass
             else:
-                send_create(ip = ip, sub = sub, domain = zone_name, chat = tg_chat, token = tg_token)
+                send_create(ip = ipv4, sub = sub, domain = zone_name, chat = tg_chat, token = tg_token)
+
+
+elif n_sub > 1:
+    sub_list = sub.split(',')
+
+    for sub in sub_list:
+
+        if ipv6:
+
+            record_id = client.get(f'/domain/zone/{zone_name}/record', 
+            fieldType='AAAA', 
+            subDomain=sub,
+            )
+
+            if record_id:
+
+                rec_id = record_id[0]
+
+                current_ip = client.get(f'/domain/zone/{zone_name}/record/{rec_id}')
+                target = current_ip['target']
+
+                if target == ipv6:
+                    print(f"{tims()} Your IP hasn't changed since last time. Skipping this time...")
+                    continue
+                else:
+                    result = client.put(f'/domain/zone/{zone_name}/record/{rec_id}', 
+                        subDomain=sub, 
+                        target=ipv6, 
+                        ttl=ttl, 
+                    )
+
+                    time.sleep(2)
+                    print(f"{tims()} IP updated for {sub}.{zone_name} with IP {ipv6}.")
+
+            elif not record_id:
+                print(f'{tims()} The subdomain you have provided does not exist. Trying to create it...')
+
+                create = client.post(f"/domain/zone/{zone_name}/record",
+                    target = ipv6,
+                    ttl = 60, 
+                    fieldType = "AAAA", 
+                    subDomain = sub, 
+                )
+
+                refresh = client.post(f'/domain/zone/{zone_name}/refresh')
+                print(f"{tims()} {sub}.{zone_name} created and assigned IP {ipv6}.")
+                if tg_token == None:
+                    pass
+                else:
+                    send_create(ip = ipv6, sub = sub, domain = zone_name, chat = tg_chat, token = tg_token)
+
+        else:
+            record_id = client.get(f'/domain/zone/{zone_name}/record', 
+            fieldType='A', 
+            subDomain=sub,
+            )
+
+            if record_id:
+
+                rec_id = record_id[0]
+
+                current_ip = client.get(f'/domain/zone/{zone_name}/record/{rec_id}')
+                target = current_ip['target']
+
+                if target == ipv4:
+                    print(f"{tims()} Your IP hasn't changed since last time. Skipping this time...")
+                    continue
+                else:
+                    result = client.put(f'/domain/zone/{zone_name}/record/{rec_id}', 
+                        subDomain=sub, 
+                        target=ipv4, 
+                        ttl=ttl, 
+                    )
+
+                    time.sleep(2)
+                    print(f"{tims()} IP updated for {sub}.{zone_name} with IP {ipv4}.")
+
+            elif not record_id:
+                print(f'{tims()} The subdomain you have provided does not exist. Trying to create it...')
+
+                create = client.post(f"/domain/zone/{zone_name}/record",
+                    target = ipv4,
+                    ttl = 60, 
+                    fieldType = "A", 
+                    subDomain = sub, 
+                )
+
+                refresh = client.post(f'/domain/zone/{zone_name}/refresh')
+                print(f"{tims()} {sub}.{zone_name} created and assigned IP {ipv4}.")
+                if tg_token == None:
+                    pass
+                else:
+                    send_create(ip = ipv4, sub = sub, domain = zone_name, chat = tg_chat, token = tg_token)
+
 
         refresh = client.post(f'/domain/zone/{zone_name}/refresh')
         if tg_token == None:
             pass
         else:
-            send_message(ip = ip, domain = zone_name, chat = tg_chat, token = tg_token)
+            send_message(ip = ipv4, domain = zone_name, chat = tg_chat, token = tg_token)
             print(f"{tims()} All subdomains for {zone_name} has been updated.")
 
