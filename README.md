@@ -1,4 +1,4 @@
-# ovh-ip-updater
+# OVH IP Updater, a container for updating DNS records for your OVH domains
 
 [![](https://badgen.net/badge/icon/github?icon=github&label)](https://github.com/myanesp/ovh-ip-updater)
 [![](https://badgen.net/badge/icon/docker?icon=docker&label)](https://hub.docker.com/r/myanesp/ovh-ip-updater/)
