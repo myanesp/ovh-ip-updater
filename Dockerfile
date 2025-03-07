@@ -1,4 +1,4 @@
-FROM python:3.13-alpine3.20
+FROM python:3.13-alpine3.21
 
 LABEL org.opencontainers.image.title="OVH IP updater Docker image"
 LABEL org.opencontainers.image.description="Docker image for updating the DNS records of your OVH domain using the API"
@@ -12,6 +12,7 @@ ENV DOMAIN=
 ENV SUBDOMAIN=
 ENV TTL=600
 ENV PROVIDER=ipify
+ENV IPV6_SUPPORT=false
 
 RUN pip3 install --upgrade pip && pip3 install --no-cache-dir ovh requests
 
