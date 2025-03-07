@@ -1,7 +1,7 @@
 # ovh-ip-updater
 
 [![](https://badgen.net/badge/icon/github?icon=github&label)](https://github.com/myanesp/ovh-ip-updater)
-[![](https://badgen.net/badge/icon/docker?icon=docker&label)]()
+[![](https://badgen.net/badge/icon/docker?icon=docker&label)](https://hub.docker.com/r/myanesp/ovh-ip-updater/)
 [![Docker Pulls](https://badgen.net/docker/pulls/myanesp/ovh-ip-updater?icon=docker&label=pulls)](https://hub.docker.com/r/myanesp/ovh-ip-updater/)
 ![](https://badgen.net/github/stars/myanesp/ovh-ip-updater?icon=github&label=stars)
 [![Docker Image Size](https://badgen.net/docker/size/myanesp/ovh-ip-updater?icon=docker&label=image%20size)](https://hub.docker.com/r/myanesp/ovh-ip-updater/)
@@ -15,7 +15,7 @@ The traditional way of updating the IP of the subdomains of your OVH domains if 
 
 However, I was looking for a system that uses the official API, as that is my favourite method and the one I've been using with other providers. So I tinkered a little and this image, however, uses the OVH API so you don't need to setup a DynHost domain and associate it to your A/AAAA records. With this Docker container, you just need your keys and token and the subdomains you want to update. 
 
-With the release (I hope it will be soon!) of the v1.0 version, you will also forget to access the web portal of OVH to create the subdomains you want to update with this image, as the container will create it if the subdomain does not exist previously.
+It also supports the creation of new subdomains to update if they don't exist, so you will also forget to access the web portal of OVH to create it, having a smooth experience.
 
 ## How to run
 
@@ -56,6 +56,7 @@ services:
     environment:
       - DOMAIN=yourdomain.com
       - SUBDOMAIN=subdomain,subdomain2
+      - IPV6_SUPPORT=false
       # - PROVIDER=ipify
       # - TTL=600
 ```
@@ -79,6 +80,7 @@ docker run -d \
 |----------|:---------:|-------------------------------------------------------------|---------|
 | DOMAIN | ✅ | Your domain (like `example.com`) | `empty` |
 | SUBDOMAIN| ✅ | Subdomain to update the IP (like `www`, if you want to update more: `sub,sub2`...) | `empty` |
+| IPV6_SUPPORT | ❌ | Whether to enable or disable IPv6 support | `false` |
 | TTL | ❌ | The time-to-live in seconds of the record | `600` |
 | PROVIDER | ❌ | Service for checking the public IP address (can be `ipify`, `mullvad` or `ifconfig`) | `ipify` |
 

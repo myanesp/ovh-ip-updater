@@ -31,7 +31,7 @@ def obtain_ipv4(ip_provider):
         sys.exit()
 
     if not ip:
-        print("Cannot obtain your public IPv6 address with your provider. Checking again with others...")
+        print("Cannot obtain your public IPv4 address with your provider. Checking again with others...")
         if ip_provider == 'ipify':
             try:
                 ip = requests.get('https://am.i.mullvad.net/ip').text.strip()
