@@ -10,16 +10,16 @@ from datetime import datetime
 version = "0.6"
 zone_name = os.environ.get("DOMAIN")
 sub = os.environ.get("SUBDOMAIN")
-ttl = os.environ.get("TTL")
+ttl = int(os.environ.get("TTL"))
 sec = os.environ.get("INTERVAL")
 ip_provider = os.environ.get("PROVIDER")
 tg_token = os.environ.get("TELEGRAM_TOKEN")
 tg_chat = os.environ.get("TELEGRAM_CHAT_ID")
-ipv6_supp = os.environ.get("IPV6_SUPPORT")
+ipv6_supp = os.environ.get("IPV6_SUPPORT").lower()
 
 n_sub = count_sub(sub)
 
-if ipv6_supp:
+if ipv6_supp == "true":
     ipv6 = obtain_ipv6()
 
     if not ipv6:
@@ -34,8 +34,9 @@ if ipv6_supp:
 
     if n_sub == 1:
         # Get the ID of the subdomain, needed for update its IP
-        record_id = client.get(f'/domain/zone/{zone_name}/record', 
-            fieldType='AAAA', 
+        record_id = client.get(
+            f'/domain/zone/{zone_name}/record',
+            fieldType='AAAA',
             subDomain=sub,
         )
 
@@ -50,10 +51,11 @@ if ipv6_supp:
                 print(f"{tims()} Your IP hasn't changed since last time. Skipping this time...")
 
             else:
-                result = client.put(f'/domain/zone/{zone_name}/record/{rec_id}', 
-                    subDomain=sub, 
-                    target=ipv6, 
-                    ttl=ttl, 
+                result = client.put(
+                    f'/domain/zone/{zone_name}/record/{rec_id}',
+                    subDomain=sub,
+                    target=ipv6,
+                    ttl=ttl,
                 )
 
                 time.sleep(2)
@@ -68,7 +70,8 @@ if ipv6_supp:
         elif not record_id:
             print(f'{tims()} The subdomain you have provided does not exist. Trying to create it...')
 
-            create = client.post(f"/domain/zone/{zone_name}/record",
+            create = client.post(
+                f"/domain/zone/{zone_name}/record",
                 target=ipv6,
                 ttl=ttl,
                 fieldType="AAAA",
@@ -86,9 +89,10 @@ if ipv6_supp:
         sub_list = sub.split(',')
 
         for sub in sub_list:
-            record_id = client.get(f'/domain/zone/{zone_name}/record', 
-            fieldType='AAAA', 
-            subDomain=sub,
+            record_id = client.get(
+                f'/domain/zone/{zone_name}/record',
+                fieldType='AAAA',
+                subDomain=sub,
             )
 
             if record_id:
@@ -102,10 +106,11 @@ if ipv6_supp:
                     print(f"{tims()} Your IP hasn't changed since last time. Skipping this time...")
                     continue
                 else:
-                    result = client.put(f'/domain/zone/{zone_name}/record/{rec_id}', 
-                        subDomain=sub, 
-                        target=ipv6, 
-                        ttl=ttl, 
+                    result = client.put(
+                        f'/domain/zone/{zone_name}/record/{rec_id}',
+                        subDomain=sub,
+                        target=ipv6,
+                        ttl=ttl,
                     )
 
                     time.sleep(2)
@@ -118,7 +123,8 @@ if ipv6_supp:
             elif not record_id:
                 print(f'{tims()} The subdomain you have provided does not exist. Trying to create it...')
 
-                create = client.post(f"/domain/zone/{zone_name}/record",
+                create = client.post(
+                    f"/domain/zone/{zone_name}/record",
                     target=ipv6,
                     ttl=ttl,
                     fieldType="AAAA",
@@ -143,14 +149,37 @@ else:
     else:
         print(f"{tims()} IPv4 obtained succesfully. Your current public IPv4 is {ipv4}, using {ip_provider}")
 
-    client = ovh.Client() 
+    client = ovh.Client()
 
     time.sleep(2)
 
+    if n_sub == 0:
+        record_ids = client.get(f'/domain/zone/{zone_name}/record', fieldType='A')
+        for record in record_ids:
+            domain_rec = client.get(f'/domain/zone/{zone_name}/record/{record}')
+            if domain_rec["subDomain"] == '':
+                if domain_rec['target'] == ipv4:
+                    print(f"{tims()} Your IP hasn't changed since last time. Skipping this time...")
+                else:
+                    client.put(
+                        f'/domain/zone/{zone_name}/record/{record_ids[0]}',
+                        target=ipv4,
+                        ttl=ttl,
+                    )
+                    time.sleep(2)
+
+                    client.post(f'/domain/zone/{zone_name}/refresh')
+                    print(f"{tims()} IP updated for {zone_name} with IP {ipv4}.")
+                    if tg_token is None:
+                        pass
+                    else:
+                        message_updated(ip=ipv4, sub=sub, domain=zone_name, chat=tg_chat, token=tg_token)
+
     if n_sub == 1:
 
-        record_id = client.get(f'/domain/zone/{zone_name}/record', 
-            fieldType='A', 
+        record_id = client.get(
+            f'/domain/zone/{zone_name}/record',
+            fieldType='A',
             subDomain=sub,
         )
 
@@ -167,11 +196,11 @@ else:
 
             else:
 
-                result = client.put(f'/domain/zone/{zone_name}/record/{rec_id}', 
-                    subDomain=sub,
-                    target=ipv4, 
-                    ttl=ttl, 
-                )
+                result = client.put(f'/domain/zone/{zone_name}/record/{rec_id}',
+                                    subDomain=sub,
+                                    target=ipv4,
+                                    ttl=ttl,
+                                    )
 
                 time.sleep(2)
 
@@ -182,23 +211,11 @@ else:
                 else:
                     message_updated(ip=ipv4, sub=sub, domain=zone_name, chat=tg_chat, token=tg_token)
 
-                create = client.post(f"/domain/zone/{zone_name}/record",
-                    target=ipv4,
-                    ttl=ttl,
-                    fieldType="A",
-                    subDomain=sub,
-                )
-                refresh = client.post(f'/domain/zone/{zone_name}/refresh')
-                print(f"{tims()} {sub}.{zone_name} created and assigned IP {ipv4}.")
-                if tg_token is None:
-                    pass
-                else:
-                    send_create(ip=ipv4, sub=sub, domain=zone_name, chat=tg_chat, token=tg_token)
-
         elif not record_id:
             print(f'{tims()} The subdomain you have provided does not exist. Trying to create it...')
 
-            create = client.post(f"/domain/zone/{zone_name}/record",
+            create = client.post(
+                f"/domain/zone/{zone_name}/record",
                 target=ipv4,
                 ttl=ttl,
                 fieldType="A",
@@ -217,9 +234,10 @@ else:
 
         for sub in sub_list:
 
-            record_id = client.get(f'/domain/zone/{zone_name}/record', 
-            fieldType='A', 
-            subDomain=sub,
+            record_id = client.get(
+                f'/domain/zone/{zone_name}/record',
+                fieldType='A',
+                subDomain=sub,
             )
 
             if record_id:
@@ -233,10 +251,11 @@ else:
                     print(f"{tims()} Your IP hasn't changed since last time. Skipping this time...")
                     continue
                 else:
-                    result = client.put(f'/domain/zone/{zone_name}/record/{rec_id}', 
-                        subDomain=sub, 
-                        target=ipv4, 
-                        ttl=ttl, 
+                    result = client.put(
+                        f'/domain/zone/{zone_name}/record/{rec_id}',
+                        subDomain=sub,
+                        target=ipv4,
+                        ttl=ttl,
                     )
 
                     time.sleep(2)
@@ -249,7 +268,8 @@ else:
             elif not record_id:
                 print(f'{tims()} The subdomain you have provided does not exist. Trying to create it...')
 
-                create = client.post(f"/domain/zone/{zone_name}/record",
+                create = client.post(
+                    f"/domain/zone/{zone_name}/record",
                     target=ipv4,
                     ttl=ttl,
                     fieldType="A",
