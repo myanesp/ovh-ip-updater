@@ -219,11 +219,12 @@ else:
 
             else:
 
-                result = client.put(f'/domain/zone/{zone_name}/record/{rec_id}',
-                                    subDomain=sub,
-                                    target=ipv4,
-                                    ttl=ttl,
-                                    )
+                result = client.put(
+                    f'/domain/zone/{zone_name}/record/{rec_id}',
+                    subDomain=sub,
+                    target=ipv4,
+                    ttl=ttl,
+                )
 
                 time.sleep(2)
 
