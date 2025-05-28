@@ -11,8 +11,9 @@ LABEL org.opencontainers.image.licenses="AGPL-3.0-or-later"
 ENV DOMAIN=
 ENV SUBDOMAIN=
 ENV TTL=600
-ENV PROVIDER=ipify
-ENV IPV6_SUPPORT=false
+ENV PROVIDER="ipify"
+ENV IPV6_SUPPORT="false"
+ENV UPDATE_ROOT_DOMAIN="true"
 
 RUN pip3 install --upgrade pip && pip3 install --no-cache-dir ovh requests
 

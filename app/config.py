@@ -106,8 +106,7 @@ def count_sub(env):
         return(subquan)
 
     else:
-        print(f"{tims()} Subdomain environment variable is not set, exiting")
-        sys.exit()
+        return 0
 
 
 def message_updated(ip, domain, sub, chat, token):

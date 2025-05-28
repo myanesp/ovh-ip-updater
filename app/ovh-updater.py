@@ -16,6 +16,7 @@ ip_provider = os.environ.get("PROVIDER")
 tg_token = os.environ.get("TELEGRAM_TOKEN")
 tg_chat = os.environ.get("TELEGRAM_CHAT_ID")
 ipv6_supp = os.environ.get("IPV6_SUPPORT").lower()
+update_root = os.environ.get("UPDATE_ROOT_DOMAIN").lower()
 
 n_sub = count_sub(sub)
 
@@ -31,6 +32,28 @@ if ipv6_supp == "true":
     client = ovh.Client() 
 
     time.sleep(2)
+
+    if n_sub == 0 or update_root == "true":
+        record_ids = client.get(f'/domain/zone/{zone_name}/record', fieldType='AAAA')
+        for record in record_ids:
+            domain_rec = client.get(f'/domain/zone/{zone_name}/record/{record}')
+            if domain_rec["subDomain"] == '':
+                if domain_rec['target'] == ipv6:
+                    print(f"{tims()} Your IP hasn't changed since last time. Skipping this time...")
+                else:
+                    client.put(
+                        f'/domain/zone/{zone_name}/record/{record}',
+                        target=ipv6,
+                        ttl=ttl,
+                    )
+                    time.sleep(2)
+
+                    client.post(f'/domain/zone/{zone_name}/refresh')
+                    print(f"{tims()} IP updated for {zone_name} with IP {ipv6}.")
+                    if tg_token is None:
+                        pass
+                    else:
+                        message_updated(ip=ipv6, sub=sub, domain=zone_name, chat=tg_chat, token=tg_token)
 
     if n_sub == 1:
         # Get the ID of the subdomain, needed for update its IP
@@ -153,7 +176,7 @@ else:
 
     time.sleep(2)
 
-    if n_sub == 0:
+    if n_sub == 0 or update_root == "true":
         record_ids = client.get(f'/domain/zone/{zone_name}/record', fieldType='A')
         for record in record_ids:
             domain_rec = client.get(f'/domain/zone/{zone_name}/record/{record}')
@@ -162,7 +185,7 @@ else:
                     print(f"{tims()} Your IP hasn't changed since last time. Skipping this time...")
                 else:
                     client.put(
-                        f'/domain/zone/{zone_name}/record/{record_ids[0]}',
+                        f'/domain/zone/{zone_name}/record/{record}',
                         target=ipv4,
                         ttl=ttl,
                     )
