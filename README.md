@@ -77,14 +77,14 @@ docker run -d \
 
 ## Environmental variables
 
-| VARIABLE | MANDATORY | VALUE                                                                                | DEFAULT |
-|----------|:---------:|--------------------------------------------------------------------------------------|---------|
-| DOMAIN | ✅ | Your domain (like `example.com`)                                                     | `empty` |
-| SUBDOMAIN| ❌ | Subdomain to update the IP (like `www`, if you want to update more: `sub,sub2`...)   | `empty` |
-| IPV6_SUPPORT | ❌ | Whether to enable or disable IPv6 support                                            | `false` |
-| TTL | ❌ | The time-to-live in seconds of the record                                            | `600`   |
+| VARIABLE | MANDATORY | VALUE | DEFAULT |
+|----------|:---------:|-------------------------------------------------------------|---------|
+| DOMAIN | ✅ | Your domain (like `example.com`) | `empty` |
+| SUBDOMAIN| ❌ | Subdomain to update the IP (like `www`, if you want to update more: `sub,sub2`...) | `empty` |
+| IPV6_SUPPORT | ❌ | Whether to enable or disable IPv6 support | `false` |
+| TTL | ❌ | The time-to-live in seconds of the record | `600` |
 | PROVIDER | ❌ | Service for checking the public IP address (can be `ipify`, `mullvad` or `ifconfig`) | `ipify` |
-| UPDATE_ROOT_DOMAIN | ❌ | Whether to update IP of a root domain name  | `true`  |
+| UPDATE_ROOT_DOMAIN | ❌ | Whether to update IP of a root domain name                                           | `true`  |
 
 ## Planned features for v1.0, stable version
 
