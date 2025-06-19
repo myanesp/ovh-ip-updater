@@ -55,10 +55,11 @@ services:
       - /etc/localtime:/etc/localtime:ro
     environment:
       - DOMAIN=yourdomain.com
-      - SUBDOMAIN=subdomain,subdomain2
-      - IPV6_SUPPORT=false
+      # - SUBDOMAIN=subdomain,subdomain2
+      # - IPV6_SUPPORT=false
       # - PROVIDER=ipify
       # - TTL=600
+      # - UPDATE_ROOT_DOMAIN=true
 ```
 
 ### Run with docker run
@@ -79,11 +80,11 @@ docker run -d \
 | VARIABLE | MANDATORY | VALUE | DEFAULT |
 |----------|:---------:|-------------------------------------------------------------|---------|
 | DOMAIN | ✅ | Your domain (like `example.com`) | `empty` |
-| SUBDOMAIN| ✅ | Subdomain to update the IP (like `www`, if you want to update more: `sub,sub2`...) | `empty` |
+| SUBDOMAIN| ❌ | Subdomain to update the IP (like `www`, if you want to update more: `sub,sub2`...) | `empty` |
 | IPV6_SUPPORT | ❌ | Whether to enable or disable IPv6 support | `false` |
 | TTL | ❌ | The time-to-live in seconds of the record | `600` |
 | PROVIDER | ❌ | Service for checking the public IP address (can be `ipify`, `mullvad` or `ifconfig`) | `ipify` |
-
+| UPDATE_ROOT_DOMAIN | ❌ | Whether to update IP of a root domain name                                           | `true`  |
 
 ## Planned features for v1.0, stable version
 
