@@ -23,7 +23,7 @@ It also supports the creation of new subdomains to update if they don't exist, s
 
 In order to update and modify the IP value for your subdomains, you need to grab some credentials from your OVH account. For that, you can follow [this official guide](https://help.ovhcloud.com/csm/en-gb-api-getting-started-ovhcloud-api?id=kb_article_view&sysparm_article=KB0042784) and create a new app. At the end, you should have an application key, an application secret and your consumer key.
 
-Then, you need to put those credentials in a `.conf` file, like the one provided in this repo [as an example](ohv.conf).
+Then, you need to put those credentials in a `.conf` file, like the one provided in this repo [as an example](ovh.conf).
 
 Your `ovh.conf` file should look like this:
 
